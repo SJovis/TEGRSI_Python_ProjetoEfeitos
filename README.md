@@ -1,4 +1,4 @@
-# Efeitos
+# Efeitos.py
 
 ## 📜 Sobre o Script
 
