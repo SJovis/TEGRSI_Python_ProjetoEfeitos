@@ -1,4 +1,5 @@
- #!/usr/bin/env python3
+#!/usr/bin/env python3
+
 import os
 import subprocess
 import sys
@@ -81,63 +82,81 @@ def efeito_1(txt: str):
     for i in range(len(txt)):
         print(" " * i + txt[i])
 
-# Efeito Diagonal Direita, Texto Invertido: Exibe cada caracter da string invertida com espaçamendo
+# Efeito Diagonal Direita, Texto Invertido:
+# Exibe cada caracter da string invertida com espaçamendo
 # decrescente da direita para a esquerda.
 def efeito_2(txt: str):
     for i in reversed(range(len(txt))):
         print(" " * i + txt[i])
 
 
-# Efeito Diagonais Cruzadas: Exibe a string em duplicada na diagonal e invertida.
+# Efeito Diagonais Cruzadas: 
+# Exibe a string em duplicada na diagonal e invertida.
 # As strings cruzam-se no centro.
 def efeito_3(txt: str):
-    # Counter guarda o index do caracter a ser avaliado
+    # Counter para guardar o index do caracter a ser avaliado
     counter = 0
-    #
+    # Defenir a posição do centro da string
     meio = math.floor(len(txt) / 2)
 
+    # Para cada caracter no range de 0 até centro da string, exibe o caracter
+    # com espaçamento antes e depois dos caracter crescente, e espaçamento
+    # equivalente ao dobro da soma dos restantes caracteres da string.
     for i in range(0,meio):
         print(" " * i + txt[i] + " " * (len(txt) - i * 2) + txt[i])
         counter += 1
     
+    # Quando a primeira metade acaba, exibe o caracter a meio
     print(" "*(meio)+txt[meio])
     counter += 1
 
+    # Para a segunda metade da string, começando do meio até ao fim,
+    # exibe os caracteres restantes, simulando o efeito de retorno do X.
     for i in range(meio,0,-1):
         try:
             print(" " * i + txt[counter] + " " * (len(txt) - i * 2) + txt[counter])
-        except IndexError:
+        except IndexError: # Caso o índice esteja fora do alcance apenas imprime uma linha em branco para manter a simetria.
             print()
         counter += 1
 
+# Efeito Diagonal Direita, Palavras Ordem Inversa: 
+# Exibe a string na diagonal direita em que a posição
+# das palavras é invertida mas não a ordem dos caracteres
 def efeito_4(txt: str):
-    txt_split = txt.split(" ")[::-1]
-    counter = 0
-    for i in range(len(txt),0,-1):
+    txt_split = txt.split(" ")[::-1]  # Transfoma a string numa lista e inverte a ordem das palavras
+    counter = 0 # Contador de index dos caracteres
+    for i in range(len(txt),0,-1): # Contagem inversa do número de caracteres para defenir espaçamento
         print(" "*i + ' '.join(txt_split)[counter])
         counter += 1
 
+# Efeito em V:
+# Exibe a string em duplicado numa diagonal invertida mas em formato de V em vez de X.
 def efeito_5(txt: str):
     tamanho = len(txt)
-    txt_reversed = txt[::-1]
+    txt_reversed = txt[::-1] # Inverte a ordem dos caracteres da string
     for i in range(len(txt)):
+        # Exibe os dois valores da string normal e a invertida com espaçamento entre elas proporcional à posição do caracter.
         print(" " * i + txt[i] + " " * ((tamanho - (i+1))*2)  + txt_reversed[i])
 
+# Efeito Deslizante:
+# Exibi a string num ciclo onde a string desliza ao longo da linha e retorna ao início.
+# Usa a data structure Deque para alterar a posição da string.
 def efeito_6(txt: str, timer: float):
-    spaces = 40 - len(txt)
 
-    txtlist = deque(list(txt))
+    spaces = 40 - len(txt) # Estabelece o tamanho necessário de espaços para completar 40 caracteres em conjunto com a string
+    txtlist = deque(list(txt)) # convert a string em lista que depois converte para deque
 
-    for i in range(40):
+    for i in range(spaces): # Por cada espaço adiciona ao deque para completar os 40 caracteres
         txtlist.append(" ")
 
-    while True:
-        print("".join(txtlist))
-        time.sleep(timer)
-        txtlist.rotate(1)
-        subprocess.run(['clear']) 
 
-def todos():
+    while True: 
+        print("".join(txtlist)) # Exibe o deque em string
+        time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
+        txtlist.rotate(1) # Transpõe o deque para uma posição á direita
+        subprocess.run(['clear']) # limpa o ecrã
+
+def todos(): # Corre todos os efeitos com pause e limpeza de tela entre efeitos
     efeito_1(frase)
     pause()
     clear_screen()
@@ -155,21 +174,22 @@ def todos():
     clear_screen()
     efeito_6(frase, args.i)
 
-def pause():
+def pause(): # Pausa, aguarda input do utilizador para continuar
     input("Pressione ENTER para continuar...")
 
 if __name__ == '__main__':
 
+    # Configuração de argparse para defenir e ler os argumentos na chamada do script
     parser = argparse.ArgumentParser(
         description="Script de efeitos de texto."
     )
-    parser.add_argument("-i", required=False, type=float, default=0.5, help='Intervalo em segundos.')
-    parser.add_argument('strings', nargs='+', help='Lista de srtings')
-    args = parser.parse_args()
-
-    frase = " ".join(args.strings).upper()
-    
-    main(frase, args.i)
+    # Argumento -i opcional, corresponde ao intervalo de segundos para o efeito_6(deslizante)
+    parser.add_argument("-i", required=False, type=float, default=0.5, help='Opcional, Intervalo em segundos. Default 0.5')
+    # Argumentos extras
+    parser.add_argument('strings', nargs='+', help='Lista de strings')
+    args = parser.parse_args() 
+    frase = " ".join(args.strings).upper() # Transforma os argumentos numa string
+    main(frase, args.i) # É chamada a função main com os valores dos argumentos
 
 
 
