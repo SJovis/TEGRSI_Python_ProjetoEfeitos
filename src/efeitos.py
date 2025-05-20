@@ -11,12 +11,15 @@ from collections import deque
 def main(frase :str, intervalo :float):
 
     while True:
+        # Limpa o ecrã, exibe o menu de opções e regista o input do utilizador.
 
         clear_screen()
         exibir_menu()
 
         opcao = input("Opção > ")
         print()
+
+        # Dependendo da escolha do utilizador, corre a respetiva função ao efeito escolhido.
 
         match opcao.upper():
             case '1':
@@ -38,17 +41,21 @@ def main(frase :str, intervalo :float):
                 clear_screen()
                 efeito_6(frase, intervalo)
             case 'T':
+                # Corre todos os efeitos de texto. Com Pause entre efeitos.
                 clear_screen()
                 todos()
             case 'E':
+                # Encerra o script.
                 print("O programa vai encerrar")
                 sys.exit()
             case _:
+                # Qualquer outro caso exibe mensagem de erro.
                 print(f"ERRO: Opção <{opcao}> inválida!")
 
         print()
         pause()
 
+# Menu de opções de escolha formatado.
 def exibir_menu():
     sep = 50 * '*'
     print(sep)
@@ -62,33 +69,45 @@ def exibir_menu():
     print(f"{"*":2}E - Encerrar{"*":>36}")
     print(sep)
 
+# Função de limpeza de ecrã em diferentes OS's.
 def clear_screen():
     if os.name == 'posix':
         subprocess.run(['clear'])
     elif os.name == 'nt':
         subprocess.run(['cls'], shell = True)
 
+# Efeito Diagonal Esquerda: Exibe cada caracter da string com espaçamento crescente.
 def efeito_1(txt: str):
     for i in range(len(txt)):
         print(" " * i + txt[i])
 
+# Efeito Diagonal Direita, Texto Invertido: Exibe cada caracter da string invertida com espaçamendo
+# decrescente da direita para a esquerda.
 def efeito_2(txt: str):
     for i in reversed(range(len(txt))):
         print(" " * i + txt[i])
 
+
+# Efeito Diagonais Cruzadas: Exibe a string em duplicada na diagonal e invertida.
+# As strings cruzam-se no centro.
 def efeito_3(txt: str):
+    # Counter guarda o index do caracter a ser avaliado
     counter = 0
+    #
     meio = math.floor(len(txt) / 2)
 
     for i in range(0,meio):
         print(" " * i + txt[i] + " " * (len(txt) - i * 2) + txt[i])
         counter += 1
     
-    print(" "*(meio+1)+txt[meio])
+    print(" "*(meio)+txt[meio])
     counter += 1
 
     for i in range(meio,0,-1):
-        print(" " * i + txt[counter] + " " * (len(txt) - i * 2) + txt[counter])
+        try:
+            print(" " * i + txt[counter] + " " * (len(txt) - i * 2) + txt[counter])
+        except IndexError:
+            print()
         counter += 1
 
 def efeito_4(txt: str):
