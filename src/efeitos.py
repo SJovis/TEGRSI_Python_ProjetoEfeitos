@@ -39,23 +39,7 @@ def main(frase :str, intervalo :float):
                 efeito_6(frase, intervalo)
             case 'T':
                 clear_screen()
-                efeito_1(frase)
-                pause()
-                clear_screen()
-                efeito_2(frase)
-                pause()
-                clear_screen()
-                efeito_3(frase)
-                pause()
-                clear_screen()
-                efeito_4(frase)
-                pause()
-                clear_screen()
-                efeito_5(frase)
-                pause()
-                clear_screen()
-                efeito_6(frase, intervalo)
-                pause()
+                todos()
             case 'E':
                 print("O programa vai encerrar")
                 sys.exit()
@@ -64,7 +48,6 @@ def main(frase :str, intervalo :float):
 
         print()
         pause()
-
 
 def exibir_menu():
     sep = 50 * '*'
@@ -135,7 +118,23 @@ def efeito_6(txt: str, timer: float):
         txtlist.rotate(1)
         subprocess.run(['clear']) 
 
-
+def todos():
+    efeito_1(frase)
+    pause()
+    clear_screen()
+    efeito_2(frase)
+    pause()
+    clear_screen()
+    efeito_3(frase)
+    pause()
+    clear_screen()
+    efeito_4(frase)
+    pause()
+    clear_screen()
+    efeito_5(frase)
+    pause()
+    clear_screen()
+    efeito_6(frase, args.i)
 
 def pause():
     input("Pressione ENTER para continuar...")
@@ -143,7 +142,7 @@ def pause():
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description="Script that adds 3 numbers from CMD"
+        description="Script de efeitos de texto."
     )
     parser.add_argument("-i", required=False, type=float, default=0.5, help='Intervalo em segundos.')
     parser.add_argument('strings', nargs='+', help='Lista de srtings')
