@@ -161,12 +161,22 @@ def efeito_6(txt: str, timer: float):
     for i in range(spaces): # Por cada espaço adiciona ao deque para completar os 40 caracteres
         txtlist.append(" ")
 
-
     while True: 
         print("".join(txtlist)) # Exibe o deque em string
         time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
         txtlist.rotate(1) # Transpõe o deque para uma posição á direita
         subprocess.run(['clear']) # limpa o ecrã
+
+        """
+        # SEM DEQUE
+
+        while True:
+        print("".join(txtlist))
+        time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
+        ultimo = txtlist.pop() # Guarda o ultimo elemento da lista
+        txtlist.insert(0, ultimo) # Adiciona o elemento ao início da lista
+        subprocess.run(['clear']) # limpa o ecrã 
+        """
 
 def todos(): # Corre todos os efeitos com pause e limpeza de tela entre efeitos
     efeito_1(frase)
@@ -202,7 +212,3 @@ if __name__ == '__main__':
     args = parser.parse_args() 
     frase = " ".join(args.strings).upper() # Transforma os argumentos numa string
     main(frase, args.i) # É chamada a função main com os valores dos argumentos
-
-
-
-
