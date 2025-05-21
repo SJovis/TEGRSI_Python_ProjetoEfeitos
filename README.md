@@ -6,13 +6,13 @@ Este script exibe efeitos visuais com texto no terminal, como diagonais, cruzame
 
 ## Como usar:
 
-```bash
-./efeitos.py [-i INTERVALO] texto a ser exibido
+```
+./efeitos.py [-i INTERVALO] PALAVRA1 PALAVRA2..
 ```
 
 * -i (opcional): intervalo de tempo (em segundos) usado no efeito deslizante. Padrão: 0.5.
 
-* texto: frase a ser exibida nos efeitos. Coloca entre aspas se tiver espaços.
+* palavra: palavra a serem exibidas no script.
 
 **Exemplo:**
 
