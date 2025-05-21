@@ -156,7 +156,7 @@ def efeito_5(txt: str):
 def efeito_6(txt: str, timer: float):
 
     spaces = 40 - len(txt) # Estabelece o tamanho necessário de espaços para completar 40 caracteres em conjunto com a string
-    txtlist = deque(list(txt)) # converte a string em lista que depois converte para deque
+    txtlist = deque(list(txt)) # convert a string em lista que depois converte para deque
 
     for i in range(spaces): # Por cada espaço adiciona ao deque para completar os 40 caracteres
         txtlist.append(" ")
@@ -202,4 +202,7 @@ if __name__ == '__main__':
     args = parser.parse_args() 
     frase = " ".join(args.strings).upper() # Transforma os argumentos numa string
     main(frase, args.i) # É chamada a função main com os valores dos argumentos
-    
+
+
+
+
