@@ -1,5 +1,19 @@
 #!/usr/bin/env python3
 
+"""
+Efeitos - Efeitos de formatação de texto
+
+Modo de utilização:
+    ./efeitos.py [-i INTERVALO] texto
+
+Argumentos:
+-i INTERVALO   (opcional) Intervalo de tempo entre frames no efeito deslizante (padrão: 0.5 segundos)
+texto          Texto a ser exibido nos efeitos.
+
+Exemplo:
+    ./efeitos.py -i 0.1 hello world
+"""
+
 import os
 import subprocess
 import sys
@@ -7,7 +21,6 @@ import math
 import argparse
 import time
 from collections import deque
-
 
 def main(frase :str, intervalo :float):
 
@@ -89,7 +102,6 @@ def efeito_2(txt: str):
     for i in reversed(range(len(txt))):
         print(" " * i + txt[i])
 
-
 # Efeito Diagonais Cruzadas: 
 # Exibe a string em duplicada na diagonal e invertida.
 # As strings cruzam-se no centro.
@@ -139,7 +151,7 @@ def efeito_5(txt: str):
         print(" " * i + txt[i] + " " * ((tamanho - (i+1))*2)  + txt_reversed[i])
 
 # Efeito Deslizante:
-# Exibi a string num ciclo onde a string desliza ao longo da linha e retorna ao início.
+# Exibe a string num ciclo onde a string desliza ao longo da linha e retorna ao início.
 # Usa a data structure Deque para alterar a posição da string.
 def efeito_6(txt: str, timer: float):
 
