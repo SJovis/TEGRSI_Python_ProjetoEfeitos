@@ -1,21 +1,5 @@
 #!/usr/bin/env python3
 
-usage = '''
-usage: efeitos.py [-h] [-i INTERVALO] strings [strings ...]
-
-Script de efeitos de texto.
-
-positional arguments:
-  strings               Texto a ser exibido com efeitos
-
-options:
-  -h, --help            show this help message and exit
-  -i INTERVALO, --intervalo INTERVALO
-                        Intervalo entre frames do efeito deslizante (default: 0.5s)
-
-Exemplo: ./efeitos.py -i 0.1 hello world
-'''
-
 import os
 import subprocess
 import sys
@@ -194,7 +178,7 @@ if __name__ == '__main__':
     # Argumento -i opcional, corresponde ao intervalo de segundos para o efeito_6(deslizante)
     parser.add_argument("-i", "--intervalo", required=False, type=float, default=0.5, help='Opcional, Intervalo em segundos. Default 0.5')
     # Argumentos extras
-    parser.add_argument('strings', nargs='+', help='Lista de strings')
+    parser.add_argument('strings', nargs='+', help='Texto a ser exibido')
     args = parser.parse_args() 
     frase = " ".join(args.strings).upper() # Transforma os argumentos numa string
     main(frase, args.intervalo) # É chamada a função main com os valores dos argumentos
