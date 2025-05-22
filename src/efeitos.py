@@ -106,30 +106,13 @@ def efeito_2(txt: str):
 # Exibe a string em duplicada na diagonal e invertida.
 # As strings cruzam-se no centro.
 def efeito_3(txt: str):
-    # Counter para guardar o index do caracter a ser avaliado
-    counter = 0
-    # Defenir a posição do centro da string
-    meio = math.floor(len(txt) / 2)
+    size = len(txt)
 
-    # Para cada caracter no range de 0 até centro da string, exibe o caracter
-    # com espaçamento antes e depois dos caracter crescente, e espaçamento
-    # equivalente ao dobro da soma dos restantes caracteres da string.
-    for i in range(0,meio):
-        print(" " * i + txt[i] + " " * (len(txt) - i * 2) + txt[i])
-        counter += 1
-    
-    # Quando a primeira metade acaba, exibe o caracter a meio
-    print(" "*(meio)+txt[meio])
-    counter += 1
-
-    # Para a segunda metade da string, começando do meio até ao fim,
-    # exibe os caracteres restantes, simulando o efeito de retorno do X.
-    for i in range(meio,0,-1):
-        try:
-            print(" " * i + txt[counter] + " " * (len(txt) - i * 2) + txt[counter])
-        except IndexError: # Caso o índice esteja fora do alcance apenas imprime uma linha em branco para manter a simetria.
-            print()
-        counter += 1
+    for i, caracter in enumerate(txt):
+        linha = [' '] * size  # Cria uma lista com o tamanho da string
+        linha[i] = caracter  # Introduz o caracter na posição da diagonal da esquerda
+        linha[size - 1 - i] = caracter # Introduz o caracter da diagonal da direita
+        print(''.join(linha)) # Transforma a lista em string
 
 # Efeito Diagonal Direita, Palavras Ordem Inversa: 
 # Exibe a string na diagonal direita em que a posição
