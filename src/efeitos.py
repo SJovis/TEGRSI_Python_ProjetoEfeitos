@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
-"""
+usage = '''
+Usage:
 Efeitos - Efeitos de formatação de texto
 
 Modo de utilização:
-    ./efeitos.py [-i INTERVALO] texto
-
-Argumentos:
--i INTERVALO   (opcional) Intervalo de tempo entre frames no efeito deslizante (padrão: 0.5 segundos)
-texto          Texto a ser exibido nos efeitos.
+    ./efeitos.py [-i INTERVALO] TEXTO
 
 Exemplo:
     ./efeitos.py -i 0.1 hello world
-"""
+
+Options:
+-i INTERVALO   (opcional) Intervalo de tempo entre frames no efeito deslizante (padrão: 0.5 segundos)
+.
+'''
 
 import os
 import subprocess
@@ -21,6 +22,9 @@ import math
 import argparse
 import time
 from collections import deque
+from docopt import docopt
+
+args = docopt(usage)
 
 def main(frase :str, intervalo :float):
 
