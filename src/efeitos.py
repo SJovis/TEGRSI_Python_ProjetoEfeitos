@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
 usage = '''
-Usage:
-Efeitos - Efeitos de formatação de texto
+usage: efeitos.py [-h] [-i INTERVALO] strings [strings ...]
 
-Modo de utilização:
-    ./efeitos.py [-i INTERVALO] TEXTO
+Script de efeitos de texto.
 
-Exemplo:
-    ./efeitos.py -i 0.1 hello world
+positional arguments:
+  strings               Texto a ser exibido com efeitos
 
-Options:
--i INTERVALO   (opcional) Intervalo de tempo entre frames no efeito deslizante (padrão: 0.5 segundos)
-.
+options:
+  -h, --help            show this help message and exit
+  -i INTERVALO, --intervalo INTERVALO
+                        Intervalo entre frames do efeito deslizante (default: 0.5s)
+
+Exemplo: ./efeitos.py -i 0.1 hello world
 '''
 
 import os
@@ -22,9 +23,6 @@ import math
 import argparse
 import time
 from collections import deque
-from docopt import docopt
-
-args = docopt(usage)
 
 def main(frase :str, intervalo :float):
 
@@ -190,12 +188,13 @@ if __name__ == '__main__':
 
     # Configuração de argparse para defenir e ler os argumentos na chamada do script
     parser = argparse.ArgumentParser(
-        description="Script de efeitos de texto."
+        description="Script de efeitos de texto.",
+        epilog="Exemplo: ./efeitos.py -i 0.1 hello world"
     )
     # Argumento -i opcional, corresponde ao intervalo de segundos para o efeito_6(deslizante)
-    parser.add_argument("-i", required=False, type=float, default=0.5, help='Opcional, Intervalo em segundos. Default 0.5')
+    parser.add_argument("-i", "--intervalo", required=False, type=float, default=0.5, help='Opcional, Intervalo em segundos. Default 0.5')
     # Argumentos extras
     parser.add_argument('strings', nargs='+', help='Lista de strings')
     args = parser.parse_args() 
     frase = " ".join(args.strings).upper() # Transforma os argumentos numa string
-    main(frase, args.i) # É chamada a função main com os valores dos argumentos
+    main(frase, args.intervalo) # É chamada a função main com os valores dos argumentos
