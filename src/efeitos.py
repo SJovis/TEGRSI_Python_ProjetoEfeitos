@@ -25,7 +25,7 @@ def main(frase :str, intervalo :float):
             case '1':
                 clear_screen()
                 efeito_1(frase)
-            case '2':  
+            case '2':
                 clear_screen()
                 efeito_2(frase)
             case '3':
@@ -88,7 +88,7 @@ def efeito_2(txt: str):
     for i in reversed(range(len(txt))):
         print(" " * i + txt[i])
 
-# Efeito Diagonais Cruzadas: 
+# Efeito Diagonais Cruzadas:
 # Exibe a string em duplicada na diagonal e invertida.
 # As strings cruzam-se no centro.
 def efeito_3(txt: str):
@@ -100,7 +100,7 @@ def efeito_3(txt: str):
         linha[size - 1 - i] = caracter # Introduz o caracter da diagonal da direita
         print(''.join(linha)) # Transforma a lista em string
 
-# Efeito Diagonal Direita, Palavras Ordem Inversa: 
+# Efeito Diagonal Direita, Palavras Ordem Inversa:
 # Exibe a string na diagonal direita em que a posição
 # das palavras é invertida mas não a ordem dos caracteres
 def efeito_4(txt: str):
@@ -115,7 +115,7 @@ def efeito_4(txt: str):
 def efeito_5(txt: str):
     tamanho = len(txt)
     txt_reversed = txt[::-1] # Inverte a ordem dos caracteres da string
-    for i in range(len(txt)):
+    for i in range(tamanho):
         # Exibe os dois valores da string normal e a invertida com espaçamento entre elas proporcional à posição do caracter.
         print(" " * i + txt[i] + " " * ((tamanho - (i+1))*2)  + txt_reversed[i])
 
@@ -130,7 +130,7 @@ def efeito_6(txt: str, timer: float):
     for i in range(spaces): # Por cada espaço adiciona ao deque para completar os 40 caracteres
         txtDeque.append(" ")
 
-    while True: 
+    while True:
         print("".join(txtDeque)) # Exibe o deque em string
         time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
         txtDeque.rotate(1) # Transpõe o deque para uma posição á direita
@@ -141,7 +141,7 @@ def efeito_6(txt: str, timer: float):
 
         txtlist = list(txt)
 
-        for i in range(spaces): 
+        for i in range(spaces):
             txtlist.append(" ")
 
         while True:
@@ -149,7 +149,7 @@ def efeito_6(txt: str, timer: float):
             time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
             ultimo = txtlist.pop() # Guarda o ultimo elemento da lista
             txtlist.insert(0, ultimo) # Adiciona o elemento ao início da lista
-            subprocess.run(['clear']) # limpa o ecrã 
+            subprocess.run(['clear']) # limpa o ecrã
         """
 
 def todos(): # Corre todos os efeitos com pause e limpeza de tela entre efeitos
@@ -184,6 +184,6 @@ if __name__ == '__main__':
     parser.add_argument("-i", "--intervalo", required=False, type=float, default=0.5, help='Opcional, Intervalo em segundos. Default 0.5')
     # Argumentos extras
     parser.add_argument('strings', nargs='+', help='Texto a ser exibido')
-    args = parser.parse_args() 
+    args = parser.parse_args()
     frase = " ".join(args.strings).upper() # Transforma os argumentos numa string
     main(frase, args.intervalo) # É chamada a função main com os valores dos argumentos
