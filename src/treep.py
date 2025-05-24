@@ -19,7 +19,8 @@ def main(diretoria: str):
             break
 
 def mostrar_arvore(diretoria: str):
-    diretorias, ficheiros = listar_diretorias(diretoria), listar_ficheiros(diretoria)
+    diretorias = listar_diretorias(diretoria)
+
 
     for dir in diretorias:
         if dir == diretorias[-1]:
@@ -27,8 +28,10 @@ def mostrar_arvore(diretoria: str):
         else:
             print(f"{color.BOLD + color.GREEN}├── {dir}{color.END}")
 
-    for file in ficheiros:
-        print(file)
+    if not args.d:
+        ficheiros = listar_ficheiros(diretoria)
+        for file in ficheiros:
+            print(file)
 
 def listar_diretorias(diretoria: str):
     diretorias = []
@@ -62,6 +65,12 @@ if __name__ == "__main__":
         'diretoria',
         help='Caminho para a diretoria',
         type=str,
+    )
+
+    parser.add_argument(
+        '-d',
+        help='Exibir apenas diretorias',
+        action='store_true',
     )
 
     # Atribuição dos argumentos introduzidos.
