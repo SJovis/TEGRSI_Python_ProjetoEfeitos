@@ -1,10 +1,21 @@
 #!/usr/bin/env python3
 
+"""
+treep.py — Listagem em formato de árvore de uma diretoria
+
+Descrição:
+    Este script percorre recursivamente uma diretoria e apresenta
+    a sua estrutura hierárquica em formato de árvore, com suporte a
+    profundidade limitada (-L), exibição de caminhos completos (-f),
+    e listagem apenas de diretórios (-d).
+"""
+
 import os
 import sys
 import argparse
 
-class color:
+# Códigos ANSI para colorir o output das diretorias
+class Color:
     GREEN = '\033[92m'
     BOLD = '\033[1m'
     END = '\033[0m'
@@ -35,21 +46,21 @@ def mostrar_arvore(diretoria: str):
         dir_nome = os.path.basename(dircaminho) # Nome da diretoria
         dir_caminho = os.path.join(dircaminho) # Caminho da diretoria
 
-        # Adquire as diretorias e ficheiros da diretoria raiz
+        # Exibe as diretorias presentes na raiz
         if depth == 0:
             dirs_raiz = dirnomes.copy()
             ficheiros_raiz  = ficheiros.copy()
             # Exibir as diretorias da raiz
             for sub_dir in dirs_raiz:
                 total_diretorias += 1
-                line = f"{indent}├── {color.BOLD + color.GREEN}{sub_dir}{color.END}"
+                line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
                 if args.f:
                     line += f" {os.path.join(dircaminho, sub_dir)}"
                 print(line)
             continue
 
-        # Mostra as diretorias de nível maior que 0
-        line = f"{indent}├── {color.BOLD + color.GREEN}{dir_nome}{color.END}"
+        # Exibe as diretorias dentro da diretoria currente
+        line = f"{indent}├── {Color.BOLD + Color.GREEN}{dir_nome}{Color.END}"
         if args.f:
             diretoria_path = os.path.join(dircaminho, dir_nome)
             line += f" {diretoria_path}"
@@ -113,12 +124,7 @@ if __name__ == "__main__":
     # Atribuição dos argumentos introduzidos.
     args, unknown = parser.parse_known_args()
 
-    # Se não for introduzido nenhuma diretoria
-    if not args.diretoria:
-        print("Caminho de diretoria não providenciado.")
-        input("Pressione Enter para sair...")
-        sys.exit(1)
-
+    # VALIDAçÕES
     # Se for introduzido algum argumento não reconhecido pelo script
     if unknown:
         print(f"Argumentos não reconhecidos: {''.join(unknown)}")
@@ -126,7 +132,6 @@ if __name__ == "__main__":
     # Se o caminho introduzido não for identificado como uma diretoria
     if not os.path.isdir(args.diretoria):
         print(f"O caminho '{args.diretoria}' não é uma diretoria.")
-        input("Pressione Enter para sair...")
         sys.exit(1)
 
     # Se não tiver permissões para aceder à diretoria
