@@ -125,20 +125,21 @@ def efeito_5(txt: str):
 def efeito_6(txt: str, timer: float):
 
     spaces = 40 - len(txt) # Estabelece o tamanho necessário de espaços para completar 40 caracteres em conjunto com a string
-    txtlist = deque(list(txt)) # convert a string em lista que depois converte para deque
+    txtDeque = deque(list(txt)) # convert a string em lista que depois converte para deque
 
     for i in range(spaces): # Por cada espaço adiciona ao deque para completar os 40 caracteres
-        txtlist.append(" ")
+        txtDeque.append(" ")
 
     while True: 
-        print("".join(txtlist)) # Exibe o deque em string
+        print("".join(txtDeque)) # Exibe o deque em string
         time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
-        txtlist.rotate(1) # Transpõe o deque para uma posição á direita
+        txtDeque.rotate(1) # Transpõe o deque para uma posição á direita
         subprocess.run(['clear']) # limpa o ecrã
 
         """
         # SEM DEQUE
 
+        txtlist = list(txt)
         while True:
             print("".join(txtlist))
             time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
