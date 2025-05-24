@@ -134,7 +134,7 @@ def efeito_6(txt: str, timer: float):
         print("".join(txtDeque)) # Exibe o deque em string
         time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
         txtDeque.rotate(1) # Transpõe o deque para uma posição á direita
-        subprocess.run(['clear']) # limpa o ecrã
+        clear_screen() # Limpa o ecrã
 
         """
         # SEM DEQUE
@@ -153,22 +153,14 @@ def efeito_6(txt: str, timer: float):
         """
 
 def todos(): # Corre todos os efeitos com pause e limpeza de tela entre efeitos
-    efeito_1(frase)
-    pause()
-    clear_screen()
-    efeito_2(frase)
-    pause()
-    clear_screen()
-    efeito_3(frase)
-    pause()
-    clear_screen()
-    efeito_4(frase)
-    pause()
-    clear_screen()
-    efeito_5(frase)
-    pause()
-    clear_screen()
-    efeito_6(frase, args.i)
+    efeitos = [efeito_1, efeito_2, efeito_3, efeito_4, efeito_5] # Lista de efeitos a serem executados
+
+    for efeito in efeitos:
+        efeito(frase)  # Chama cada efeito com a frase
+        pause()  # Pausa entre efeitos
+        clear_screen() # Limpa o ecrã após cada efeito
+
+    efeito_6(frase, args.intervalo) # Chama o efeito deslizante com o intervalo definido
 
 def pause(): # Pausa, aguarda input do utilizador para continuar
     input("Pressione ENTER para continuar...")
