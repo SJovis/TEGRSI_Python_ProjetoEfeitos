@@ -6,6 +6,7 @@ import argparse
 
 def main(diretoria: str):
     print(diretoria)
+    print(f"Conteúdo: ", os.listdir(diretoria))
     
 
 if __name__ == "__main__":
@@ -20,12 +21,15 @@ if __name__ == "__main__":
         type=str,
     )
 
+    # Atribuição dos argumentos introduzidos.
     args, unknown = parser.parse_known_args()
 
+    # Se for introduzido algum argumento não reconhecido pelo script
     if unknown:
         print(f"Argumentos não reconhecidos: {''.join(unknown)}")
 
+    # Se o caminho introduzido não for identificado como uma diretoria
     if not os.path.isdir(args.diretoria):
-        parser.error(f"O caminho '{args.directory}' não é uma diretoria.")
+        parser.error(f"O caminho '{args.diretoria}' não é uma diretoria.")
 
     main(args.diretoria)
