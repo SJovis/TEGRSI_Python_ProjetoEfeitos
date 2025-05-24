@@ -140,6 +140,10 @@ def efeito_6(txt: str, timer: float):
         # SEM DEQUE
 
         txtlist = list(txt)
+
+        for i in range(spaces): 
+            txtlist.append(" ")
+
         while True:
             print("".join(txtlist))
             time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
