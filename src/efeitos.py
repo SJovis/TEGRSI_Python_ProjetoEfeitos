@@ -115,7 +115,7 @@ def efeito_4(txt: str):
 def efeito_5(txt: str):
     tamanho = len(txt)
     txt_reversed = txt[::-1] # Inverte a ordem dos caracteres da string
-    for i in range(len(txt)):
+    for i in range(tamanho):
         # Exibe os dois valores da string normal e a invertida com espaçamento entre elas proporcional à posição do caracter.
         print(" " * i + txt[i] + " " * ((tamanho - (i+1))*2)  + txt_reversed[i])
 
