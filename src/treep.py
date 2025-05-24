@@ -18,11 +18,13 @@ import argparse
 class Color:
     GREEN = '\033[92m'
     BOLD = '\033[1m'
+    CYAN = '\033[96m'
     END = '\033[0m'
 
 def main(diretoria: str):
 
     # Mostrar o conteúdo da diretoria em formato de árvore
+    print(f"{Color.CYAN}┌── {diretoria}{Color.END}")
     mostrar_arvore(diretoria)
 
 
