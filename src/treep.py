@@ -140,8 +140,7 @@ if __name__ == "__main__":
     try:
         os.listdir(args.diretoria)
     except PermissionError:
-        print("Sem permissão para aceder a diretoria.")
-        input("Pressione Enter para sair...")
+        print(f"Sem permissão para aceder à diretoria {args.diretoria}")
         sys.exit(1)
 
     main(args.diretoria)
