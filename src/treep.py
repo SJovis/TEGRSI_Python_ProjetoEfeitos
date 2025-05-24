@@ -8,15 +8,23 @@ from colors import color
 
 def main(diretoria: str):
     while True:
-        print(diretoria)
+        #print(diretoria)
 
         # Mostrar o conteúdo da diretoria em formato de árvore
-        mostrar_arvore(diretoria)
+        #mostrar_arvore(diretoria)
+        print(teste(diretoria))
         print("Pressione 'q' para sair: ")
         user_input = input("> ")
         if user_input.lower() == 'q':
             print("Saindo...")
             break
+
+def teste(diretoria: str):
+    for (root,dirs,files) in os.walk(diretoria, topdown=True):
+        print (root)
+        print (dirs)
+        print (files)
+        print ('--------------------------------')
 
 def mostrar_arvore(diretoria: str):
     diretorias = listar_diretorias(diretoria)
@@ -89,6 +97,12 @@ if __name__ == "__main__":
         '-f',
         help='Exibir caminho completo de diretorias e ficheiros',
         action='store_true',
+    )
+
+    parser.add_argument(
+        '-L', '--level',
+        help='Número de níveis de diretorias a exibir',
+        type=int,
     )
 
     # Atribuição dos argumentos introduzidos.
