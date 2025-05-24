@@ -171,11 +171,11 @@ def efeito_6(txt: str, timer: float):
         # SEM DEQUE
 
         while True:
-        print("".join(txtlist))
-        time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
-        ultimo = txtlist.pop() # Guarda o ultimo elemento da lista
-        txtlist.insert(0, ultimo) # Adiciona o elemento ao início da lista
-        subprocess.run(['clear']) # limpa o ecrã 
+            print("".join(txtlist))
+            time.sleep(timer) # Pausa de 0.5s default ou o valor atribuido pelo utilizador
+            ultimo = txtlist.pop() # Guarda o ultimo elemento da lista
+            txtlist.insert(0, ultimo) # Adiciona o elemento ao início da lista
+            subprocess.run(['clear']) # limpa o ecrã 
         """
 
 def todos(): # Corre todos os efeitos com pause e limpeza de tela entre efeitos
