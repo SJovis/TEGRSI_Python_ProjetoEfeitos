@@ -3,77 +3,81 @@
 import os
 import sys
 import argparse
-from colors import color
 
+class color:
+    GREEN = '\033[92m'
+    BOLD = '\033[1m'
+    END = '\033[0m'
 
 def main(diretoria: str):
-    while True:
-        #print(diretoria)
 
-        # Mostrar o conteúdo da diretoria em formato de árvore
-        #mostrar_arvore(diretoria)
-        print(teste(diretoria))
-        print("Pressione 'q' para sair: ")
-        user_input = input("> ")
-        if user_input.lower() == 'q':
-            print("Saindo...")
-            break
+    # Mostrar o conteúdo da diretoria em formato de árvore
+    mostrar_arvore(diretoria)
 
-def teste(diretoria: str):
-    for (root,dirs,files) in os.walk(diretoria, topdown=True):
-        print (root)
-        print (dirs)
-        print (files)
-        print ('--------------------------------')
 
 def mostrar_arvore(diretoria: str):
-    diretorias = listar_diretorias(diretoria)
+    dirs_raiz = []
+    ficheiros_raiz = []
+    total_ficheiros = 0
+    total_diretorias = 0
+    # os.walk() retorna um gerador(comporta-se como um iterador) que percorre de forma recursiva
+    # todos as pastas e ficheiros a partir da diretoria fornecida.
+    for dircaminho, dirnomes, ficheiros in os.walk(diretoria):
+        # Conta a quantidade de separadores '/' a contar do fim da diretoria raiz até ao final
+        depth = dircaminho[len(diretoria):].count(os.sep)
+        # Se o nível de recursividade for maior que o args.level a lista diretorias fica vazia impedindo
+        # o os.walk() de continuar a descer de níveis.
+        if depth >= args.level:
+            dirnomes[:] = [] 
+            continue
+        
+        indent = '│   ' * depth # Indentação correspondente ao nível
+        dir_nome = os.path.basename(dircaminho) # Nome da diretoria
+        dir_caminho = os.path.join(dircaminho) # Caminho da diretoria
 
+        # Adquire as diretorias e ficheiros da diretoria raiz
+        if depth == 0:
+            dirs_raiz = dirnomes.copy()
+            ficheiros_raiz  = ficheiros.copy()
+            # Exibir as diretorias da raiz
+            for sub_dir in dirs_raiz:
+                total_diretorias += 1
+                line = f"{indent}├── {color.BOLD + color.GREEN}{sub_dir}{color.END}"
+                if args.f:
+                    line += f" {os.path.join(dircaminho, sub_dir)}"
+                print(line)
+            continue
 
-    for dir in diretorias:
-        if dir == diretorias[-1]:
-            line = []
-            line += f"{color.BOLD + color.GREEN}└── {dir}{color.END}"
-            if args.f:
-                line += f" {diretoria+dir}"
-            print(''.join(line))
-        else:
-            line = []
-            line += f"{color.BOLD + color.GREEN}└── {dir}{color.END}"
-            if args.f:
-                line += f" {diretoria+dir}"
-            print(''.join(line))
+        # Mostra as diretorias de nível maior que 0
+        line = f"{indent}├── {color.BOLD + color.GREEN}{dir_nome}{color.END}"
+        if args.f:
+            diretoria_path = os.path.join(dircaminho, dir_nome)
+            line += f" {diretoria_path}"
+        print(line)
+        total_diretorias += 1
 
+        # Mostra todos os ficheiros dentro da diretoria currente
+        if not args.d:
+            for f in ficheiros:
+                total_ficheiros += 1
+                file_indent = '│   ' * (depth + 1) # Indentação da linha
+                file_path = os.path.join(dircaminho, f) # Junta o caminho actual com o nome do ficheiro para obter o caminho do ficheiro
+                line = f"{file_indent}└── {f}"
+                if args.f:
+                    line += f" {file_path}"
+                print(line)
+
+    # Após percorrer todas as sub-diretorias exibe os ficheiros da diretoria raiz
     if not args.d:
-        ficheiros = listar_ficheiros(diretoria)
-        for file in ficheiros:
-            line = []
-            line += file
+        for f in ficheiros_raiz:
+            total_ficheiros += 1
+            line = f"└── {f}"
             if args.f:
-                line += f" {diretoria+file}"
-            print(''.join(line))
-
-def listar_diretorias(diretoria: str):
-    diretorias = []
-
-    for item in os.listdir(diretoria):
-        caminho_completo = os.path.join(diretoria, item)
-
-        if os.path.isdir(caminho_completo):
-            diretorias.append(item)
-
-    return diretorias
-
-def listar_ficheiros(diretoria: str):
-    ficheiros = []
-
-    for item in os.listdir(diretoria):
-        caminho_completo = os.path.join(diretoria, item)
-
-        if os.path.isfile(caminho_completo):
-            ficheiros.append(item)
-
-    return ficheiros
+                line += f" {os.path.join(diretoria, f)}"
+            print(line)
+    print()
+    # Mostrar número de diretorias e ficheiros encontrados
+    print(f"{total_diretorias} diretorias, {total_ficheiros} ficheiros")
 
 if __name__ == "__main__":
     # Configuração de argparse para defenir e ler os argumentos na chamada do script
@@ -103,6 +107,7 @@ if __name__ == "__main__":
         '-L', '--level',
         help='Número de níveis de diretorias a exibir',
         type=int,
+        default=1,
     )
 
     # Atribuição dos argumentos introduzidos.
