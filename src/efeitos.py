@@ -1,19 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-Efeitos - Efeitos de formatação de texto
-
-Modo de utilização:
-    ./efeitos.py [-i INTERVALO] texto
-
-Argumentos:
--i INTERVALO   (opcional) Intervalo de tempo entre frames no efeito deslizante (padrão: 0.5 segundos)
-texto          Texto a ser exibido nos efeitos.
-
-Exemplo:
-    ./efeitos.py -i 0.1 hello world
-"""
-
 import os
 import subprocess
 import sys
@@ -106,30 +92,13 @@ def efeito_2(txt: str):
 # Exibe a string em duplicada na diagonal e invertida.
 # As strings cruzam-se no centro.
 def efeito_3(txt: str):
-    # Counter para guardar o index do caracter a ser avaliado
-    counter = 0
-    # Defenir a posição do centro da string
-    meio = math.floor(len(txt) / 2)
+    size = len(txt)
 
-    # Para cada caracter no range de 0 até centro da string, exibe o caracter
-    # com espaçamento antes e depois dos caracter crescente, e espaçamento
-    # equivalente ao dobro da soma dos restantes caracteres da string.
-    for i in range(0,meio):
-        print(" " * i + txt[i] + " " * (len(txt) - i * 2) + txt[i])
-        counter += 1
-    
-    # Quando a primeira metade acaba, exibe o caracter a meio
-    print(" "*(meio)+txt[meio])
-    counter += 1
-
-    # Para a segunda metade da string, começando do meio até ao fim,
-    # exibe os caracteres restantes, simulando o efeito de retorno do X.
-    for i in range(meio,0,-1):
-        try:
-            print(" " * i + txt[counter] + " " * (len(txt) - i * 2) + txt[counter])
-        except IndexError: # Caso o índice esteja fora do alcance apenas imprime uma linha em branco para manter a simetria.
-            print()
-        counter += 1
+    for i, caracter in enumerate(txt):
+        linha = [' '] * size  # Cria uma lista com o tamanho da string
+        linha[i] = caracter  # Introduz o caracter na posição da diagonal da esquerda
+        linha[size - 1 - i] = caracter # Introduz o caracter da diagonal da direita
+        print(''.join(linha)) # Transforma a lista em string
 
 # Efeito Diagonal Direita, Palavras Ordem Inversa: 
 # Exibe a string na diagonal direita em que a posição
@@ -203,12 +172,13 @@ if __name__ == '__main__':
 
     # Configuração de argparse para defenir e ler os argumentos na chamada do script
     parser = argparse.ArgumentParser(
-        description="Script de efeitos de texto."
+        description="Script de efeitos de texto.",
+        epilog="Exemplo: ./efeitos.py -i 0.1 hello world"
     )
     # Argumento -i opcional, corresponde ao intervalo de segundos para o efeito_6(deslizante)
-    parser.add_argument("-i", required=False, type=float, default=0.5, help='Opcional, Intervalo em segundos. Default 0.5')
+    parser.add_argument("-i", "--intervalo", required=False, type=float, default=0.5, help='Opcional, Intervalo em segundos. Default 0.5')
     # Argumentos extras
-    parser.add_argument('strings', nargs='+', help='Lista de strings')
+    parser.add_argument('strings', nargs='+', help='Texto a ser exibido')
     args = parser.parse_args() 
     frase = " ".join(args.strings).upper() # Transforma os argumentos numa string
-    main(frase, args.i) # É chamada a função main com os valores dos argumentos
+    main(frase, args.intervalo) # É chamada a função main com os valores dos argumentos
