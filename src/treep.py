@@ -24,14 +24,26 @@ def mostrar_arvore(diretoria: str):
 
     for dir in diretorias:
         if dir == diretorias[-1]:
-            print(f"{color.BOLD + color.GREEN}└── {dir}{color.END}")
+            line = []
+            line += f"{color.BOLD + color.GREEN}└── {dir}{color.END}"
+            if args.f:
+                line += f" {diretoria+dir}"
+            print(''.join(line))
         else:
-            print(f"{color.BOLD + color.GREEN}├── {dir}{color.END}")
+            line = []
+            line += f"{color.BOLD + color.GREEN}└── {dir}{color.END}"
+            if args.f:
+                line += f" {diretoria+dir}"
+            print(''.join(line))
 
     if not args.d:
         ficheiros = listar_ficheiros(diretoria)
         for file in ficheiros:
-            print(file)
+            line = []
+            line += file
+            if args.f:
+                line += f" {diretoria+file}"
+            print(''.join(line))
 
 def listar_diretorias(diretoria: str):
     diretorias = []
@@ -70,6 +82,12 @@ if __name__ == "__main__":
     parser.add_argument(
         '-d',
         help='Exibir apenas diretorias',
+        action='store_true',
+    )
+
+    parser.add_argument(
+        '-f',
+        help='Exibir caminho completo de diretorias e ficheiros',
         action='store_true',
     )
 
