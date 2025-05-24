@@ -153,14 +153,12 @@ def efeito_6(txt: str, timer: float):
         """
 
 def todos(): # Corre todos os efeitos com pause e limpeza de tela entre efeitos
-    efeitos = [efeito_1, efeito_2, efeito_3, efeito_4, efeito_5] # Lista de efeitos a serem executados
+    efeitos = [efeito_1, efeito_2, efeito_3, efeito_4, efeito_5, lambda f: efeito_6(f, args.intervalo)] # Lista de efeitos a serem executados
 
     for efeito in efeitos:
         efeito(frase)  # Chama cada efeito com a frase
         pause()  # Pausa entre efeitos
         clear_screen() # Limpa o ecrã após cada efeito
-
-    efeito_6(frase, args.intervalo) # Chama o efeito deslizante com o intervalo definido
 
 def pause(): # Pausa, aguarda input do utilizador para continuar
     input("Pressione ENTER para continuar...")
