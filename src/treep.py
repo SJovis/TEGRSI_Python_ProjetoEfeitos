@@ -20,6 +20,7 @@ class Color:
     BOLD = '\033[1m'
     CYAN = '\033[96m'
     END = '\033[0m'
+    RED = '\x1b[31m'
 
 # Contadores globais, track de quantas diretorias e ficheiros foram percorridos.
 total_ficheiros = 0
@@ -60,7 +61,11 @@ def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
         total_ficheiros += 1
         file_indent = '│   ' * (depth) # Indentação da linha
         file_path = os.path.join(dirpath, f) # Junta o caminho actual com o nome do ficheiro para obter o caminho do ficheiro
-        line = f"{file_indent}└── {f}"
+        hasPermission = os.access(file_path, os.R_OK)
+        if hasPermission:
+            line = f"{file_indent}└── {f}"
+        else:
+            line = f"{file_indent}└──{Color.RED} {f}{Color.END}"
         if args.f:
             line += f"{Color.CYAN} {file_path}{Color.END}"
         print(line)
@@ -93,7 +98,12 @@ def exibir_diretorias(diretorias : list[str], depth : int, dirpath : str):
 # As diretorias têm o texto a verde e bold e todos os paths/caminhos a ciano 
 def print_diretoria(depth : int, dirpath : str, sub_dir : str):
     indent = '│   ' * depth 
-    line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
+    hasPermission = os.access(os.path.join(dirpath, sub_dir), os.R_OK)
+    # Vermelho se não tiver permissões
+    if hasPermission:
+        line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
+    else:
+        line = f"{indent}├── {Color.BOLD + Color.RED}{sub_dir}{Color.END}"
     if args.f:
         line += f"{Color.CYAN} {os.path.join(dirpath, sub_dir)}{Color.END}"
     print(line)
