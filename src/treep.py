@@ -14,21 +14,46 @@ import os
 import sys
 import argparse
 
-# Códigos ANSI para colorir o output das diretorias
+# Códigos ANSI para diferenciar melhor as diretorias dos ficheiros com cores diferentes
 class Color:
     GREEN = '\033[92m'
     BOLD = '\033[1m'
     CYAN = '\033[96m'
     END = '\033[0m'
 
+# Contadores globais, track de quantas diretorias e ficheiros foram percorridos.
 total_ficheiros = 0
 total_diretorias = 0
 
 def main(diretoria: str):
-    # Mostrar o conteúdo da diretoria em formato de árvore
+    # Exibe em modo árvore todas as diretorias e ficheiros recursivamente
     mostrar_arvore(diretoria)
 
+def mostrar_arvore(diretoria: str):
+    # Snapshot dos ficheiros presentes na diretoria root
+    _, _, ficheiros_raiz = next(os.walk(diretoria))
 
+    # os.walk() retorna um gerador(comporta-se como um iterador) que percorre de forma recursiva
+    # todos as pastas e ficheiros a partir da diretoria fornecida.
+    for dirpath, dirnames, _ in os.walk(diretoria):
+        # Conta a quantidade de separadores '/' para defenir a profundidade da diretoria atual em relação à root
+        depth = dirpath[len(diretoria):].count(os.sep)
+        # Se o nível de recursividade for maior que o args.level a lista diretorias fica vazia impedindo
+        # o os.walk() de continuar a descer de níveis.
+        if depth > args.level:
+            dirnames[:] = [] 
+            continue # Passa para a próxima iteração
+
+        # Exibe todas as diretorias e os seus ficheiross
+        exibir_diretorias(diretorias=dirnames, depth=depth, dirpath=dirpath)
+
+    if not args.d:
+        exibir_ficheiros(ficheiros=ficheiros_raiz,depth=0, dirpath=dirpath)
+    print()
+    # Mostrar número de diretorias e ficheiros encontrados
+    print(f"{total_diretorias} diretorias, {total_ficheiros} ficheiros")
+
+# Todos os prints estão formatados com a indentação ser proporcional ao nível de profundidade
 def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
     for f in ficheiros:
         global total_ficheiros
@@ -40,12 +65,16 @@ def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
             line += f"{Color.CYAN} {file_path}{Color.END}"
         print(line)
 
+
 def exibir_diretorias(diretorias : list[str], depth : int, dirpath : str):
     global total_diretorias
     if depth == 0:
+        # Se o nível de profundidade for 0, exibe apenas as diretorias sem ficheiros, 
+        # Não exibe ficheiros para garantir que os ficheiros da root aparecem sempre em último.
         for sub_dir in diretorias:
             print_diretoria(depth=depth, dirpath=dirpath, sub_dir=sub_dir)
     else:
+        # Exibe pastas e ficheiros
         for sub_dir in diretorias:
                     total_diretorias += 1
                     print_diretoria(depth=depth, dirpath=dirpath, sub_dir=sub_dir)
@@ -53,7 +82,8 @@ def exibir_diretorias(diretorias : list[str], depth : int, dirpath : str):
                         files_path = os.path.join(dirpath,sub_dir)
                         sub_files = [f for f in os.listdir(files_path) if os.path.isfile(os.path.join(files_path,f))]
                         exibir_ficheiros(ficheiros=sub_files, depth=depth+1, dirpath=dirpath)
-                    
+
+# As diretorias têm o texto a verde e bold e todos os paths a cyan 
 def print_diretoria(depth : int, dirpath : str, sub_dir : str):
     indent = '│   ' * depth 
     line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
@@ -61,41 +91,15 @@ def print_diretoria(depth : int, dirpath : str, sub_dir : str):
         line += f"{Color.CYAN} {os.path.join(dirpath, sub_dir)}{Color.END}"
     print(line)
 
-
-def mostrar_arvore(diretoria: str):
-
-    _, _, ficheiros_raiz = next(os.walk(diretoria))
-    # os.walk() retorna um gerador(comporta-se como um iterador) que percorre de forma recursiva
-    # todos as pastas e ficheiros a partir da diretoria fornecida.
-    for dirpath, dirnames, _ in os.walk(diretoria):
-        # Conta a quantidade de separadores '/' a contar do fim da diretoria raiz até ao final
-        depth = dirpath[len(diretoria):].count(os.sep)
-        # Se o nível de recursividade for maior que o args.level a lista diretorias fica vazia impedindo
-        # o os.walk() de continuar a descer de níveis.
-        if depth > args.level:
-            dirnames[:] = [] 
-            continue # Passa para a próxima iteração
-
-        exibir_diretorias(diretorias=dirnames, depth=depth, dirpath=dirpath)
-
-    if not args.d:
-        exibir_ficheiros(ficheiros=ficheiros_raiz,depth=0, dirpath=dirpath)
-    print()
-    # Mostrar número de diretorias e ficheiros encontrados
-    print(f"{total_diretorias} diretorias, {total_ficheiros} ficheiros")
-
-
+# Validação de input e argumentos
 def validations(args,unknown):
-
     # Se for introduzido algum argumento não reconhecido pelo script
     if unknown:
         print(f"Argumentos não reconhecidos: {''.join(unknown)}")
-
     # Se o caminho introduzido não for identificado como uma diretoria
     if not os.path.isdir(args.diretoria):
         print(f"O caminho '{args.diretoria}' não é uma diretoria.")
         sys.exit(1)
-
     # Se não tiver permissões para aceder à diretoria
     try:
         os.listdir(args.diretoria)
@@ -105,7 +109,7 @@ def validations(args,unknown):
 
 
 if __name__ == "__main__":
-    # Configuração de argparse para defenir e ler os argumentos na chamada do script
+    # Configuração de argparse e argumentos opcionais.
     parser = argparse.ArgumentParser(
         description="Este script exibe o conteúdo de uma directoria em formato de árvore",
         epilog="Exemplo: ./treep.py ~/Desktop/"
