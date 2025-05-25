@@ -61,11 +61,11 @@ def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
         total_ficheiros += 1
         file_indent = '│   ' * (depth) # Indentação da linha
         file_path = os.path.join(dirpath, f) # Junta o caminho actual com o nome do ficheiro para obter o caminho do ficheiro
-        hasPermission = os.access(file_path, os.R_OK)
-        if hasPermission:
-            line = f"{file_indent}└── {f}"
-        else:
-            line = f"{file_indent}└──{Color.RED} {f}{Color.END}"
+        #hasPermission = os.access(file_path, os.R_OK) # permissões não estão a funcionar para ficheiros
+        #if hasPermission:
+        line = f"{file_indent}└── {f}"
+        # else:
+         #   line = f"{file_indent}└──{Color.RED} {f}{Color.END}"
         if args.f:
             line += f"{Color.CYAN} {file_path}{Color.END}"
         print(line)
