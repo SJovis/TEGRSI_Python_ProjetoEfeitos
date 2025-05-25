@@ -72,6 +72,7 @@ def exibir_diretorias(diretorias : list[str], depth : int, dirpath : str):
         # Se o nível de profundidade for 0, exibe apenas as diretorias sem ficheiros, 
         # Não exibe ficheiros para garantir que os ficheiros da root aparecem sempre em último.
         for sub_dir in diretorias:
+            total_diretorias += 1
             print_diretoria(depth=depth, dirpath=dirpath, sub_dir=sub_dir)
     else:
         # Exibe pastas e ficheiros
