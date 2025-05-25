@@ -21,75 +21,69 @@ class Color:
     CYAN = '\033[96m'
     END = '\033[0m'
 
-def main(diretoria: str):
+total_ficheiros = 0
+total_diretorias = 0
 
+def main(diretoria: str):
     # Mostrar o conteúdo da diretoria em formato de árvore
-    print(f"{Color.CYAN}┌── {diretoria}{Color.END}")
     mostrar_arvore(diretoria)
 
+
+def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
+    for f in ficheiros:
+        global total_ficheiros
+        total_ficheiros += 1
+        file_indent = '│   ' * (depth) # Indentação da linha
+        file_path = os.path.join(dirpath, f) # Junta o caminho actual com o nome do ficheiro para obter o caminho do ficheiro
+        line = f"{file_indent}└── {f}"
+        if args.f:
+            line += f"{Color.CYAN} {file_path}{Color.END}"
+        print(line)
+
+def exibir_diretorias(diretorias : list[str], depth : int, dirpath : str):
+    global total_diretorias
+    if depth == 0:
+        for sub_dir in diretorias:
+            print_diretoria(depth=depth, dirpath=dirpath, sub_dir=sub_dir)
+    else:
+        for sub_dir in diretorias:
+                    total_diretorias += 1
+                    print_diretoria(depth=depth, dirpath=dirpath, sub_dir=sub_dir)
+                    if not args.d:
+                        files_path = os.path.join(dirpath,sub_dir)
+                        sub_files = [f for f in os.listdir(files_path) if os.path.isfile(os.path.join(files_path,f))]
+                        exibir_ficheiros(ficheiros=sub_files, depth=depth+1, dirpath=dirpath)
+                    
+def print_diretoria(depth : int, dirpath : str, sub_dir : str):
+    indent = '│   ' * depth 
+    line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
+    if args.f:
+        line += f"{Color.CYAN} {os.path.join(dirpath, sub_dir)}{Color.END}"
+    print(line)
+
+
 def mostrar_arvore(diretoria: str):
-    dirs_raiz = []
-    ficheiros_raiz = []
-    total_ficheiros = 0
-    total_diretorias = 0
+
+    _, _, ficheiros_raiz = next(os.walk(diretoria))
     # os.walk() retorna um gerador(comporta-se como um iterador) que percorre de forma recursiva
     # todos as pastas e ficheiros a partir da diretoria fornecida.
-    for dircaminho, dirnomes, ficheiros in os.walk(diretoria):
+    for dirpath, dirnames, _ in os.walk(diretoria):
         # Conta a quantidade de separadores '/' a contar do fim da diretoria raiz até ao final
-        depth = dircaminho[len(diretoria):].count(os.sep)
+        depth = dirpath[len(diretoria):].count(os.sep)
         # Se o nível de recursividade for maior que o args.level a lista diretorias fica vazia impedindo
         # o os.walk() de continuar a descer de níveis.
-        if depth >= args.level:
-            dirnomes[:] = [] 
+        if depth > args.level:
+            dirnames[:] = [] 
             continue # Passa para a próxima iteração
-        
-        indent = '│   ' * depth # Indentação correspondente ao nível
-        dir_nome = os.path.basename(dircaminho) # Nome da diretoria
-        dir_caminho = os.path.join(dircaminho) # Caminho da diretoria
 
-        # Exibe as diretorias presentes na raiz
-        if depth == 0:
-            dirs_raiz = dirnomes.copy()
-            ficheiros_raiz  = ficheiros.copy()
-            # Exibir as diretorias da raiz
-            for sub_dir in dirs_raiz:
-                total_diretorias += 1
-                line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
-                if args.f:
-                    line += f" {os.path.join(dircaminho, sub_dir)}"
-                print(line)
-            continue
+        exibir_diretorias(diretorias=dirnames, depth=depth, dirpath=dirpath)
 
-        # Exibe as diretorias dentro da diretoria currente
-        line = f"{indent}├── {Color.BOLD + Color.GREEN}{dir_nome}{Color.END}"
-        if args.f:
-            diretoria_path = os.path.join(dircaminho, dir_nome)
-            line += f" {diretoria_path}"
-        print(line)
-        total_diretorias += 1
-
-        # Mostra todos os ficheiros dentro da diretoria currente
-        if not args.d:
-            for f in ficheiros:
-                total_ficheiros += 1
-                file_indent = '│   ' * (depth + 1) # Indentação da linha
-                file_path = os.path.join(dircaminho, f) # Junta o caminho actual com o nome do ficheiro para obter o caminho do ficheiro
-                line = f"{file_indent}└── {f}"
-                if args.f:
-                    line += f" {file_path}"
-                print(line)
-
-    # Após percorrer todas as sub-diretorias exibe os ficheiros da diretoria raiz
     if not args.d:
-        for f in ficheiros_raiz:
-            total_ficheiros += 1
-            line = f"└── {f}"
-            if args.f:
-                line += f" {os.path.join(diretoria, f)}"
-            print(line)
+        exibir_ficheiros(ficheiros=ficheiros_raiz,depth=0, dirpath=dirpath)
     print()
     # Mostrar número de diretorias e ficheiros encontrados
     print(f"{total_diretorias} diretorias, {total_ficheiros} ficheiros")
+
 
 def validations(args,unknown):
 
