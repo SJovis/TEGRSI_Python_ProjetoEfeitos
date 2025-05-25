@@ -27,7 +27,6 @@ def main(diretoria: str):
     print(f"{Color.CYAN}┌── {diretoria}{Color.END}")
     mostrar_arvore(diretoria)
 
-
 def mostrar_arvore(diretoria: str):
     dirs_raiz = []
     ficheiros_raiz = []
@@ -42,7 +41,7 @@ def mostrar_arvore(diretoria: str):
         # o os.walk() de continuar a descer de níveis.
         if depth >= args.level:
             dirnomes[:] = [] 
-            continue
+            continue # Passa para a próxima iteração
         
         indent = '│   ' * depth # Indentação correspondente ao nível
         dir_nome = os.path.basename(dircaminho) # Nome da diretoria
@@ -92,6 +91,25 @@ def mostrar_arvore(diretoria: str):
     # Mostrar número de diretorias e ficheiros encontrados
     print(f"{total_diretorias} diretorias, {total_ficheiros} ficheiros")
 
+def validations(args,unknown):
+
+    # Se for introduzido algum argumento não reconhecido pelo script
+    if unknown:
+        print(f"Argumentos não reconhecidos: {''.join(unknown)}")
+
+    # Se o caminho introduzido não for identificado como uma diretoria
+    if not os.path.isdir(args.diretoria):
+        print(f"O caminho '{args.diretoria}' não é uma diretoria.")
+        sys.exit(1)
+
+    # Se não tiver permissões para aceder à diretoria
+    try:
+        os.listdir(args.diretoria)
+    except PermissionError:
+        print(f"Sem permissão para aceder à diretoria {args.diretoria}")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     # Configuração de argparse para defenir e ler os argumentos na chamada do script
     parser = argparse.ArgumentParser(
@@ -127,20 +145,6 @@ if __name__ == "__main__":
     args, unknown = parser.parse_known_args()
 
     # VALIDAçÕES
-    # Se for introduzido algum argumento não reconhecido pelo script
-    if unknown:
-        print(f"Argumentos não reconhecidos: {''.join(unknown)}")
-
-    # Se o caminho introduzido não for identificado como uma diretoria
-    if not os.path.isdir(args.diretoria):
-        print(f"O caminho '{args.diretoria}' não é uma diretoria.")
-        sys.exit(1)
-
-    # Se não tiver permissões para aceder à diretoria
-    try:
-        os.listdir(args.diretoria)
-    except PermissionError:
-        print(f"Sem permissão para aceder à diretoria {args.diretoria}")
-        sys.exit(1)
+    validations(args, unknown)
 
     main(args.diretoria)
