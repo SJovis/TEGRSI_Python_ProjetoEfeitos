@@ -79,11 +79,17 @@ def exibir_diretorias(diretorias : list[str], depth : int, dirpath : str):
                     total_diretorias += 1
                     print_diretoria(depth=depth, dirpath=dirpath, sub_dir=sub_dir)
                     if not args.d:
+                        # Path dos ficheiros da sub-diretoria 
                         files_path = os.path.join(dirpath,sub_dir)
-                        sub_files = [f for f in os.listdir(files_path) if os.path.isfile(os.path.join(files_path,f))]
+                        sub_files = []
+                        for file in os.listdir(files_path):
+                            # Todos os ficheiros validados são guardados
+                            if os.path.isfile(os.path.join(files_path,file)):
+                                sub_files.append(file) 
+                        # São exibidos todos os ficheiros das sub-diretorias
                         exibir_ficheiros(ficheiros=sub_files, depth=depth+1, dirpath=dirpath)
 
-# As diretorias têm o texto a verde e bold e todos os paths a cyan 
+# As diretorias têm o texto a verde e bold e todos os paths/caminhos a ciano 
 def print_diretoria(depth : int, dirpath : str, sub_dir : str):
     indent = '│   ' * depth 
     line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
