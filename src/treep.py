@@ -13,6 +13,9 @@ Descrição:
 import os
 import sys
 import argparse
+import io
+import re
+from contextlib import redirect_stdout
 
 # Códigos ANSI para diferenciar melhor as diretorias dos ficheiros com cores diferentes
 class Color:
@@ -29,6 +32,7 @@ total_diretorias = 0
 def main(diretoria: str):
     # Exibe em modo árvore todas as diretorias e ficheiros recursivamente
     mostrar_arvore(diretoria)
+    exportar_para_html(diretoria) if args.html else None
 
 def mostrar_arvore(diretoria: str):
     # Snapshot dos ficheiros presentes na diretoria root
@@ -88,6 +92,7 @@ def exibir_diretorias(diretorias : list[str], depth : int, dirpath : str):
                         # Path dos ficheiros da sub-diretoria 
                         files_path = os.path.join(dirpath,sub_dir)
                         sub_files = []
+                        # [sub_files.append(f) for f in os.listdir(files_path) if os.path.isfile(os.path.join(files_path,file))]
                         for file in os.listdir(files_path):
                             # Todos os ficheiros validados são guardados
                             if os.path.isfile(os.path.join(files_path,file)):
@@ -124,6 +129,30 @@ def validations(args,unknown):
         print(f"Sem permissão para aceder à diretoria {args.diretoria}")
         sys.exit(1)
 
+def remove_ansi_code(html : str):
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])') # Regex ANSI TAGS
+    return ansi_escape.sub('', html)
+
+
+def exportar_para_html(diretoria: str):
+    nome_ficheiro = ''.join([diretoria, '_export.html'])
+    # Inicializar ficheiro HTML
+    html_file = io.StringIO()
+    html_file.write("<html><head><meta charset='utf-8'><title>TREEP.py</title></head><body>")
+    html_file.write(f"<h1>Estrutura de {diretoria}</h1><pre><br>")
+
+    # Redireciona a saída padrão temporariamente para capturar o output da árvore
+    with redirect_stdout(html_file):
+        mostrar_arvore(diretoria)
+    html_file.write("</pre></body></html>")
+    
+    with open(nome_ficheiro, "w", encoding="utf-8") as f:
+        # Remove código ANSII e grava o ficheiro
+        f.write(remove_ansi_code(html_file.getvalue()))
+
+    print(f"\nEstrutura exportada com sucesso para {nome_ficheiro}")
+
+# Exporta a estrutura para HTML automaticamente após exibir no terminal
 
 if __name__ == "__main__":
     # Configuração de argparse e argumentos opcionais.
@@ -154,6 +183,12 @@ if __name__ == "__main__":
         help='Número de níveis de diretorias a exibir',
         type=int,
         default=1,
+    )
+
+    parser.add_argument(
+        '-H', '--html',
+        help='Exportar o output para ficheiro .html',
+        action='store_true'
     )
 
     # Atribuição dos argumentos introduzidos.
