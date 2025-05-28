@@ -36,9 +36,13 @@ def main(diretoria: str):
     # Exporta para um ficheiro html
     exportar_para_html(diretoria) if args.html else None
 
+#Não está a mostrar as pastas da última profundidade
+
 def mostrar_arvore(diretoria: str):
     # Snapshot dos ficheiros presentes na diretoria root
     rootpath, _, rootfiles = next(os.walk(diretoria))
+    current_dirs = list[str]
+    #print(f'├── {Color.BOLD + Color.GREEN}{rootpath}{Color.END}')
 
     # os.walk() retorna um gerador(comporta-se como um iterador) que percorre de forma recursiva
     # todos as pastas e ficheiros a partir da diretoria fornecida.
@@ -57,8 +61,8 @@ def mostrar_arvore(diretoria: str):
         print_diretoria(depth=depth,
                         dirpath=dirpath,
                         sub_dir=os.path.basename(dirpath), 
-                        root=is_root)
-
+                        root=is_root,
+                        nofiles=False)
     # Exibe os ficheiros da diretoria root
     if not args.d:
         exibir_ficheiros(ficheiros=rootfiles,depth=0, dirpath=dirpath)
@@ -80,8 +84,11 @@ def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
         print(line)
 
 # As diretorias têm o texto a verde e bold e todos os paths/caminhos a ciano 
-def print_diretoria(depth : int, dirpath : str, sub_dir : str, root : bool):
+def print_diretoria(depth : int, dirpath : str, sub_dir : str, root : bool, nofiles: bool):
     global total_diretorias
+
+    #if dirpath[len(dirpath):].count(os.sep) == depth and root:
+    #    return
     indent = '│   ' * depth 
     line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
     if args.f:
@@ -89,7 +96,18 @@ def print_diretoria(depth : int, dirpath : str, sub_dir : str, root : bool):
     total_diretorias += 1
     print(line)
 
-    if not args.d:
+    _, sub_folders, _ = next(os.walk(dirpath))
+
+    if sub_folders:
+        for subf in sub_folders:
+            indent = '│   ' * (depth +1)
+            line = f"{indent}├── {Color.BOLD + Color.GREEN}{os.path.basename(subf)}{Color.END}"
+            if args.f:
+                line += f"{Color.CYAN} {os.path.join(dirpath, subf)}{Color.END}"
+            total_diretorias += 1
+            print(line)
+
+    if not args.d or nofiles:
         ficheiros = []
         for f in os.listdir(dirpath):
             # Se o f for avaliado como ficheiro adiciona à lista.
