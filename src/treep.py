@@ -36,8 +36,6 @@ def main(diretoria: str):
     # Exporta para um ficheiro html
     exportar_para_html(diretoria) if args.html else None
 
-#Não está a mostrar as pastas da última profundidade
-
 def mostrar_arvore(diretoria: str):
     # Snapshot dos ficheiros presentes na diretoria root
     rootpath, _, rootfiles = next(os.walk(diretoria))
@@ -50,10 +48,7 @@ def mostrar_arvore(diretoria: str):
         depth = dirpath[len(diretoria):].count(os.sep)
         is_root = rootpath == dirpath # Verifica se a diretoria corrente é a root
         
-
-
-        # Se o nível de recursividade for maior que o args.level a lista diretorias fica vazia impedindo
-        # o os.walk() de continuar a descer de níveis.
+        # Se o -L introduzido for 0 mostra apenas as diretorias sem ficheiros
         if args.level == 0:
             print_diretoria(depth=depth-1,
                         dirpath=dirpath,
@@ -61,10 +56,14 @@ def mostrar_arvore(diretoria: str):
                         root=is_root,
                         nofiles=True)
             break
+
+        # Se o nível de recursividade for maior que o args.level a lista diretorias fica vazia impedindo
+        # o os.walk() de continuar a descer de níveis.
         if depth > args.level:
             dirnames[:] = [] 
             continue # Passa para a próxima iteração
         
+        # Se o dirpath a ser avaliado for o mesmo que a root, salta para a próxima iteralão
         if dirpath == diretoria:
             continue
 
@@ -74,6 +73,7 @@ def mostrar_arvore(diretoria: str):
                         sub_dir=os.path.basename(dirpath), 
                         root=is_root,
                         nofiles=False)
+        
     # Exibe os ficheiros da diretoria root
     if not args.d:
         exibir_ficheiros(ficheiros=rootfiles,depth=0, dirpath=dirpath)
@@ -98,8 +98,7 @@ def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
 def print_diretoria(depth : int, dirpath : str, sub_dir : str, root : bool, nofiles: bool):
     global total_diretorias
 
-    #if dirpath[len(dirpath):].count(os.sep) == depth and root:
-    #    return
+    # Se a diretoria NÃO for a diretoria root, exibe primeiro o nome da diretoria 
     if not args.diretoria == dirpath:
         indent = '│   ' * depth 
         line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
@@ -108,6 +107,7 @@ def print_diretoria(depth : int, dirpath : str, sub_dir : str, root : bool, nofi
         total_diretorias += 1
         print(line)
 
+    # Se a diretoria tiver sub pastas, exibe primeiro as pastas.
     _, sub_folders, _ = next(os.walk(dirpath))
 
     if sub_folders:
@@ -118,7 +118,9 @@ def print_diretoria(depth : int, dirpath : str, sub_dir : str, root : bool, nofi
                 line += f"{Color.CYAN} {os.path.join(dirpath, subf)}{Color.END}"
             total_diretorias += 1
             print(line)
-
+    
+    # Por fim exibe os ficheiros se não tiver opção -d ou {nofiles}
+    # {nofiles} é usado para quando queremos exibir só as diretorias sem os ficheiros respetivos
     if not args.d or nofiles:
         ficheiros = []
         for f in os.listdir(dirpath):
@@ -138,6 +140,7 @@ def validations(args,unknown):
     if not os.path.isdir(args.diretoria):
         print(f"O caminho '{args.diretoria}' não é uma diretoria.")
         sys.exit(1)
+
     # Se não tiver permissões para aceder à diretoria
     try:
         os.listdir(args.diretoria)
@@ -146,12 +149,12 @@ def validations(args,unknown):
         sys.exit(1)
 
 def remove_ansi_code(html : str):
-    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])') # Regex ANSI TAGS
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])') # Regex para ANSI TAGS
     return ansi_escape.sub('', html)
 
 
 def exportar_para_html(diretoria: str):
-    nome_ficheiro = ''.join([diretoria, '_export.html'])
+    nome_ficheiro = ''.join([diretoria.split('/')[-1], '_export.html'])
     # Inicializar ficheiro HTML
     html_file = io.StringIO()
     # A tag <pre> de html permite manter o formato do texto
@@ -164,11 +167,12 @@ def exportar_para_html(diretoria: str):
 
     html_file.write("</pre></body></html>")
     
-    with open(nome_ficheiro, "w", encoding="utf-8") as f:
+    # Cria um ficheiro 
+    with open(f'{nome_ficheiro}', "w", encoding="utf-8") as f:
         # Remove código ANSII e grava o ficheiro
         f.write(remove_ansi_code(html_file.getvalue()))
 
-    print(f"\nEstrutura exportada com sucesso para {nome_ficheiro}")
+    print(f"\nEstrutura exportada com sucesso para {diretoria}/{nome_ficheiro}")
 
 # Exporta a estrutura para HTML automaticamente após exibir no terminal
 
@@ -212,7 +216,7 @@ if __name__ == "__main__":
     # Atribuição dos argumentos introduzidos.
     args, unknown = parser.parse_known_args()
 
-    # Normalizar a entrada de diretoria para a profundidade ser consistente
+    # Normaliza a entrada de diretoria para tornar consistente a quantidade de '/' como separadores.
     args.diretoria = os.path.abspath(args.diretoria).rstrip(os.sep)
 
     # VALIDAçÕES
