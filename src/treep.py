@@ -41,8 +41,7 @@ def main(diretoria: str):
 def mostrar_arvore(diretoria: str):
     # Snapshot dos ficheiros presentes na diretoria root
     rootpath, _, rootfiles = next(os.walk(diretoria))
-    current_dirs = list[str]
-    #print(f'├── {Color.BOLD + Color.GREEN}{rootpath}{Color.END}')
+    print(f'├── {Color.BOLD + Color.GREEN}{rootpath}{Color.END}')
 
     # os.walk() retorna um gerador(comporta-se como um iterador) que percorre de forma recursiva
     # todos as pastas e ficheiros a partir da diretoria fornecida.
@@ -51,14 +50,26 @@ def mostrar_arvore(diretoria: str):
         depth = dirpath[len(diretoria):].count(os.sep)
         is_root = rootpath == dirpath # Verifica se a diretoria corrente é a root
         
+
+
         # Se o nível de recursividade for maior que o args.level a lista diretorias fica vazia impedindo
         # o os.walk() de continuar a descer de níveis.
+        if args.level == 0:
+            print_diretoria(depth=depth-1,
+                        dirpath=dirpath,
+                        sub_dir=os.path.basename(dirpath), 
+                        root=is_root,
+                        nofiles=True)
+            break
         if depth > args.level:
             dirnames[:] = [] 
             continue # Passa para a próxima iteração
         
+        if dirpath == diretoria:
+            continue
+
         # Exibe todas as diretorias e os seus ficheiross
-        print_diretoria(depth=depth,
+        print_diretoria(depth=depth-1,
                         dirpath=dirpath,
                         sub_dir=os.path.basename(dirpath), 
                         root=is_root,
@@ -89,12 +100,13 @@ def print_diretoria(depth : int, dirpath : str, sub_dir : str, root : bool, nofi
 
     #if dirpath[len(dirpath):].count(os.sep) == depth and root:
     #    return
-    indent = '│   ' * depth 
-    line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
-    if args.f:
-        line += f"{Color.CYAN} {dirpath}{Color.END}"
-    total_diretorias += 1
-    print(line)
+    if not args.diretoria == dirpath:
+        indent = '│   ' * depth 
+        line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
+        if args.f:
+            line += f"{Color.CYAN} {dirpath}{Color.END}"
+        total_diretorias += 1
+        print(line)
 
     _, sub_folders, _ = next(os.walk(dirpath))
 
@@ -199,6 +211,9 @@ if __name__ == "__main__":
 
     # Atribuição dos argumentos introduzidos.
     args, unknown = parser.parse_known_args()
+
+    # Normalizar a entrada de diretoria para a profundidade ser consistente
+    args.diretoria = os.path.abspath(args.diretoria).rstrip(os.sep)
 
     # VALIDAçÕES
     validations(args, unknown)
