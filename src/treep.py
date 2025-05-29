@@ -8,7 +8,8 @@ Descrição:
     a sua estrutura hierárquica em formato de árvore, com suporte a
     profundidade limitada (-L), exibição de caminhos completos (-f),
     listagem apenas de diretórios (-d) e exportação do output para
-    um ficheiro .html (-H).
+    um ficheiro .html (-H). O script exibe primeiro as pastas e depois
+    os ficheiros.
 """
 
 import os
@@ -47,7 +48,6 @@ def mostrar_arvore(diretoria: str):
         # Conta a quantidade de separadores '/' para defenir a profundidade da diretoria atual em relação à root
         depth = dirpath[len(diretoria):].count(os.sep)
         is_root = rootpath == dirpath # Verifica se a diretoria corrente é a root
-        
         # Se o -L introduzido for 0 mostra apenas as diretorias sem ficheiros
         if args.level == 0:
             print_diretoria(depth=depth-1,
@@ -56,17 +56,15 @@ def mostrar_arvore(diretoria: str):
                         root=is_root,
                         nofiles=True)
             break
-
         # Se o nível de recursividade for maior que o args.level a lista diretorias fica vazia impedindo
         # o os.walk() de continuar a descer de níveis.
         if depth > args.level:
             dirnames[:] = [] 
             continue # Passa para a próxima iteração
         
-        # Se o dirpath a ser avaliado for o mesmo que a root, salta para a próxima iteralão
+        # Se o dirpath a ser avaliado for o mesmo que a root, salta para a próxima iteração
         if dirpath == diretoria:
             continue
-
         # Exibe todas as diretorias e os seus ficheiross
         print_diretoria(depth=depth-1,
                         dirpath=dirpath,
@@ -88,8 +86,9 @@ def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
         total_ficheiros += 1
         file_indent = '│   ' * (depth) # Indentação da linha
         # Junta o caminho actual com o nome do ficheiro para obter o caminho do ficheiro
-        file_path = os.path.join(dirpath, f) 
-        line = f"{file_indent}└── {f}"
+        file_path = os.path.join(dirpath, f)
+        # Verifica se é o ultimo ficheiro
+        line = f"{file_indent}└── {f}" if f == ficheiros[-1] else f"{file_indent}├── {f}"
         if args.f:
             line += f"{Color.CYAN} {file_path}{Color.END}"
         print(line)
@@ -97,22 +96,21 @@ def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
 # As diretorias têm o texto a verde e bold e todos os paths/caminhos a ciano 
 def print_diretoria(depth : int, dirpath : str, sub_dir : str, root : bool, nofiles: bool):
     global total_diretorias
-
     # Se a diretoria NÃO for a diretoria root, exibe primeiro o nome da diretoria 
-    if not args.diretoria == dirpath:
-        indent = '│   ' * depth 
-        line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}"
-        if args.f:
-            line += f"{Color.CYAN} {dirpath}{Color.END}"
-        total_diretorias += 1
-        print(line)
-
+    #if not args.diretoria == dirpath:
+    #    indent = '│   ' * depth 
+    #    line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}" 
+    #    if args.f:
+    #        line += f"{Color.CYAN} {dirpath}{Color.END}"
+    #    total_diretorias += 1
+    #    print(line)
+    #print(dirpath)
     # Se a diretoria tiver sub pastas, exibe primeiro as pastas.
-    _, sub_folders, _ = next(os.walk(dirpath))
-
+    path, sub_folders, _ = next(os.walk(dirpath))
+    print(next(os.walk(dirpath)))
     if sub_folders:
         for subf in sub_folders:
-            indent = '│   ' * (depth +1)
+            indent = '│   ' * (depth)
             line = f"{indent}├── {Color.BOLD + Color.GREEN}{os.path.basename(subf)}{Color.END}"
             if args.f:
                 line += f"{Color.CYAN} {os.path.join(dirpath, subf)}{Color.END}"
