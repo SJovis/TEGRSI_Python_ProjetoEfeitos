@@ -38,40 +38,40 @@ def main(diretoria: str):
     exportar_para_html(diretoria) if args.html else None
 
 def mostrar_arvore(diretoria: str):
+    global total_diretorias
     # Snapshot dos ficheiros presentes na diretoria root
     rootpath, _, rootfiles = next(os.walk(diretoria))
-    print(f'├── {Color.BOLD + Color.GREEN}{rootpath}{Color.END}')
+    print(f' {Color.BOLD + Color.GREEN}{rootpath}{Color.END}')
 
     # os.walk() retorna um gerador(comporta-se como um iterador) que percorre de forma recursiva
     # todos as pastas e ficheiros a partir da diretoria fornecida.
-    for dirpath, dirnames, _ in os.walk(diretoria):
+    for dirpath, dirnames, filenames in os.walk(diretoria):
         # Conta a quantidade de separadores '/' para defenir a profundidade da diretoria atual em relação à root
         depth = dirpath[len(diretoria):].count(os.sep)
         is_root = rootpath == dirpath # Verifica se a diretoria corrente é a root
         # Se o -L introduzido for 0 mostra apenas as diretorias sem ficheiros
         if args.level == 0:
-            print_diretoria(depth=depth-1,
-                        dirpath=dirpath,
-                        sub_dir=os.path.basename(dirpath), 
-                        root=is_root,
-                        nofiles=True)
+            for e in dirnames:
+                indent = '│   ' * depth 
+                line = f"{indent}├── {Color.BOLD + Color.GREEN}{e}{Color.END}" 
+                if args.f:
+                    line += f"{Color.CYAN} {dirpath}{Color.END}"
+                total_diretorias += 1
+                print(line)
             break
+        exibir_diretoria(depth=depth-1,
+                        dirpath=dirpath,
+                        sub_dir=os.path.basename(dirpath))
+        
         # Se o nível de recursividade for maior que o args.level a lista diretorias fica vazia impedindo
         # o os.walk() de continuar a descer de níveis.
         if depth > args.level:
             dirnames[:] = [] 
             continue # Passa para a próxima iteração
         
-        # Se o dirpath a ser avaliado for o mesmo que a root, salta para a próxima iteração
-        if dirpath == diretoria:
-            continue
-        # Exibe todas as diretorias e os seus ficheiross
-        print_diretoria(depth=depth-1,
-                        dirpath=dirpath,
-                        sub_dir=os.path.basename(dirpath), 
-                        root=is_root,
-                        nofiles=False)
-        
+        if not args.d and not is_root:
+            exibir_ficheiros(ficheiros=filenames, depth=depth, dirpath=dirpath)
+
     # Exibe os ficheiros da diretoria root
     if not args.d:
         exibir_ficheiros(ficheiros=rootfiles,depth=0, dirpath=dirpath)
@@ -94,40 +94,15 @@ def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
         print(line)
 
 # As diretorias têm o texto a verde e bold e todos os paths/caminhos a ciano 
-def print_diretoria(depth : int, dirpath : str, sub_dir : str, root : bool, nofiles: bool):
+def exibir_diretoria(depth : int, dirpath : str, sub_dir : str):
     global total_diretorias
-    # Se a diretoria NÃO for a diretoria root, exibe primeiro o nome da diretoria 
-    #if not args.diretoria == dirpath:
-    #    indent = '│   ' * depth 
-    #    line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}" 
-    #    if args.f:
-    #        line += f"{Color.CYAN} {dirpath}{Color.END}"
-    #    total_diretorias += 1
-    #    print(line)
-    #print(dirpath)
-    # Se a diretoria tiver sub pastas, exibe primeiro as pastas.
-    path, sub_folders, _ = next(os.walk(dirpath))
-    print(next(os.walk(dirpath)))
-    if sub_folders:
-        for subf in sub_folders:
-            indent = '│   ' * (depth)
-            line = f"{indent}├── {Color.BOLD + Color.GREEN}{os.path.basename(subf)}{Color.END}"
-            if args.f:
-                line += f"{Color.CYAN} {os.path.join(dirpath, subf)}{Color.END}"
-            total_diretorias += 1
-            print(line)
-    
-    # Por fim exibe os ficheiros se não tiver opção -d ou {nofiles}
-    # {nofiles} é usado para quando queremos exibir só as diretorias sem os ficheiros respetivos
-    if not args.d or nofiles:
-        ficheiros = []
-        for f in os.listdir(dirpath):
-            # Se o f for avaliado como ficheiro adiciona à lista.
-            if os.path.isfile(os.path.join(dirpath, os.path.basename(f))):
-                ficheiros.append(f)
-        # Se a diretoria a ser avaliada for root não exibe ficheiros
-        if not root:
-            exibir_ficheiros(ficheiros=ficheiros, depth=depth+1, dirpath=dirpath)
+    if dirpath != args.diretoria:
+        indent = '│   ' * depth 
+        line = f"{indent}├── {Color.BOLD + Color.GREEN}{sub_dir}{Color.END}" 
+        if args.f:
+            line += f"{Color.CYAN} {dirpath}{Color.END}"
+        total_diretorias += 1
+        print(line)
 
 # Validação de input e argumentos
 def validations(args,unknown):
