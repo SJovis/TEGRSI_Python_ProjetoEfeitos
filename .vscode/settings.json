@@ -1,0 +1,8 @@
+{
+    "workbench.colorTheme": "Vim Deep Dark",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.lineNumbers": "on",
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000
+}

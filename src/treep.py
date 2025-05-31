@@ -8,8 +8,7 @@ Descrição:
     a sua estrutura hierárquica em formato de árvore, com suporte a
     profundidade limitada (-L), exibição de caminhos completos (-f),
     listagem apenas de diretórios (-d) e exportação do output para
-    um ficheiro .html (-H). O script exibe primeiro as pastas e depois
-    os ficheiros.
+    um ficheiro .html (-H).
 """
 
 import os
@@ -41,15 +40,17 @@ def mostrar_arvore(diretoria: str):
     global total_diretorias
     # Snapshot dos ficheiros presentes na diretoria root
     rootpath, _, rootfiles = next(os.walk(diretoria))
-    print(f' {Color.BOLD + Color.GREEN}{rootpath}{Color.END}')
+    print(f' {Color.BOLD + Color.GREEN}{rootpath}{Color.END}') # Diretoria root onde o script é corrido
 
-    # os.walk() retorna um gerador(comporta-se como um iterador) que percorre de forma recursiva
-    # todos as pastas e ficheiros a partir da diretoria fornecida.
+    # os.walk() retorna um gerador que percorre de forma recursiva todas as pastas e ficheiros a partir da diretoria fornecida.
     for dirpath, dirnames, filenames in os.walk(diretoria):
         # Conta a quantidade de separadores '/' para defenir a profundidade da diretoria atual em relação à root
         depth = dirpath[len(diretoria):].count(os.sep)
-        is_root = rootpath == dirpath # Verifica se a diretoria corrente é a root
-        # Se o -L introduzido for 0 mostra apenas as diretorias sem ficheiros
+
+        # Verifica se a diretoria corrente é a root, para pordermos exibir os ficheiros da pasta root em último lugar
+        is_root = rootpath == dirpath
+
+        # Se o -L introduzido for 0 mostra apenas as diretorias da root e quebra o ciclo for
         if args.level == 0:
             for e in dirnames:
                 indent = '│   ' * depth 
@@ -59,6 +60,8 @@ def mostrar_arvore(diretoria: str):
                 total_diretorias += 1
                 print(line)
             break
+
+        # Exibe as pastas dentro da diretoria a ser avaliada
         exibir_diretoria(depth=depth-1,
                         dirpath=dirpath,
                         sub_dir=os.path.basename(dirpath))
@@ -69,6 +72,7 @@ def mostrar_arvore(diretoria: str):
             dirnames[:] = [] 
             continue # Passa para a próxima iteração
         
+        # Se o argumento -d for falso e a diretoria não for a root, exibe os ficheios da diretoria atual
         if not args.d and not is_root:
             exibir_ficheiros(ficheiros=filenames, depth=depth, dirpath=dirpath)
 
@@ -76,10 +80,10 @@ def mostrar_arvore(diretoria: str):
     if not args.d:
         exibir_ficheiros(ficheiros=rootfiles,depth=0, dirpath=dirpath)
     print()
-    # Mostrar número de diretorias e ficheiros encontrados
+    # Mostrar número de diretorias e ficheiros percorridos.
     print(f"{total_diretorias} diretorias, {total_ficheiros} ficheiros")
 
-# Todos os prints estão formatados com a indentação ser proporcional ao nível de profundidade
+# Todos os prints estão formatados com a indentação proporcional ao nível de profundidade
 def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
     global total_ficheiros
     for f in ficheiros:
@@ -90,6 +94,7 @@ def exibir_ficheiros(ficheiros : list[str], depth : int, dirpath : str):
         # Verifica se é o ultimo ficheiro
         line = f"{file_indent}└── {f}" if f == ficheiros[-1] else f"{file_indent}├── {f}"
         if args.f:
+            # Adiciona o path do ficheiro
             line += f"{Color.CYAN} {file_path}{Color.END}"
         print(line)
 
@@ -146,8 +151,6 @@ def exportar_para_html(diretoria: str):
         f.write(remove_ansi_code(html_file.getvalue()))
 
     print(f"\nEstrutura exportada com sucesso para {diretoria}/{nome_ficheiro}")
-
-# Exporta a estrutura para HTML automaticamente após exibir no terminal
 
 if __name__ == "__main__":
     # Configuração de argparse e argumentos opcionais.

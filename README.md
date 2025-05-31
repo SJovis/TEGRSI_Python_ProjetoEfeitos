@@ -29,12 +29,18 @@ Este script exibe o conteúdo de uma diretoria em formato de árvore.
 ### Como usar:
 
 ```
-
+./treep.py [CAMINHO] [-d][-f][-L][-H]
 ```
+
+* Caminho: Caminho da diretoria a ser percorrida pelo script.
+* -d: Exibe apenas diretorias.
+* -f: Mostra o caminho de cada pasta/ficheiro.
+* -L: Define o nível de profundidade.
+* -H: Exporta o resultado do script para um ficheiro HTML.
 
 **Exemplo:**
 
 ```bash
 chmod u+x treep.py
-./treep.py ~/Desktop/
+./treep.py ~/Desktop/ -L2 -H
 ```
